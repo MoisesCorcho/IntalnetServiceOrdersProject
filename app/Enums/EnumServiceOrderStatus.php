@@ -40,5 +40,20 @@ enum EnumServiceOrderStatus: string
             self::CLOSED->value => 'Cerrado',
         ];
     }
+
+    public function label(): string
+    {
+        return self::labels()[$this->value];
+    }
+
+    public function next(): ?self
+    {
+        $cases = self::cases();
+        $index = array_search($this, $cases, true);
+
+        return $index !== false && isset($cases[$index + 1])
+            ? $cases[$index + 1]
+            : null;
+    }
 }
 

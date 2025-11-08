@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasAddressTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Customer extends Model
 {
@@ -23,6 +24,18 @@ class Customer extends Model
         'phone',
         'secondary_phone'
     ];
+
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): ?string => match (true) {
+                filled($this->first_name) && filled($this->last_name) => trim("{$this->first_name} {$this->last_name}"),
+                filled($this->first_name) => $this->first_name,
+                filled($this->last_name) => $this->last_name,
+                default => null,
+            }
+        );
+    }
 
     public function serviceOrders(): HasMany
     {

@@ -179,20 +179,11 @@ class ServiceOrderResource extends Resource
             ? Customer::withTrashed()->with('addresses')->find($id)
             : null;
 
-        $fullName = $customer
-            ? trim(collect([$customer->first_name, $customer->last_name])->filter()->implode(' '))
-            : null;
+        $fullName = $customer?->full_name;
 
         $primaryAddress = $customer?->addresses->first();
 
-        $formattedAddress = $primaryAddress
-            ? collect([
-                $primaryAddress->street,
-                $primaryAddress->city,
-                $primaryAddress->state,
-                $primaryAddress->zip,
-            ])->filter()->implode(', ')
-            : null;
+        $formattedAddress = $primaryAddress?->fullAddress;
 
         $set('customer_name_snapshot', $fullName);
         $set('customer_phone_snapshot', $customer?->phone);
@@ -203,40 +194,84 @@ class ServiceOrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['assignedUser', 'customer']))
             ->columns([
                 Tables\Columns\TextColumn::make('order_number')
+                    ->label('Número')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Título')
+                    ->limit(40)
+                    ->tooltip(fn (ServiceOrder $record): ?string => $record->title)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('state')
+                    ->label('Estado')
+                    ->badge()
+                    ->formatStateUsing(
+                        fn (string $state): string => EnumServiceOrderStatus::tryFrom($state)?->label() ?? $state
+                    )
+                    ->color(function (string $state): string {
+                        return match ($state) {
+                            EnumServiceOrderStatus::RECEIVED->value => 'gray',
+                            EnumServiceOrderStatus::ON_THE_WAY->value => 'primary',
+                            EnumServiceOrderStatus::AT_DESTINATION->value => 'info',
+                            EnumServiceOrderStatus::PROCESS_STARTED->value => 'warning',
+                            EnumServiceOrderStatus::COMPLETED->value => 'success',
+                            EnumServiceOrderStatus::CLOSED->value => 'success',
+                            default => 'secondary',
+                        };
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('check_in_date')
-                    ->date()
+                    ->label('Recibido')
+                    ->date('d/m/Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('scheduled_at')
-                    ->dateTime()
+                    ->label('Programado')
+                    ->formatStateUsing(
+                        fn ($state): string => $state
+                            ? Carbon::parse($state)->format('d/m/Y H:i')
+                            : 'Sin programar'
+                    )
                     ->sortable(),
-                Tables\Columns\TextColumn::make('assigned_user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('customer_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('assignedUser.full_name')
+                    ->label('Técnico asignado')
+                    ->description(fn (ServiceOrder $record): ?string => $record->assignedUser?->email)
+                    ->searchable(['assignedUser.name', 'assignedUser.last_name'])
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('customer.full_name')
+                    ->label('Cliente')
+                    ->description(fn (ServiceOrder $record): ?string => $record->customer_email_snapshot)
+                    ->searchable(['customer.first_name', 'customer.last_name', 'customer_name_snapshot', 'customer_email_snapshot'])
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('customer_name_snapshot')
+                    ->label('Nombre (snapshot)')
+                    ->description('Datos guardados al registrar la orden')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('customer_phone_snapshot')
+                    ->label('Teléfono del cliente')
+                    ->formatStateUsing(fn (?string $state): string => $state ?: 'Sin teléfono')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('customer_email_snapshot')
+                    ->label('Correo del cliente')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('completed_at')
-                    ->dateTime()
+                    ->label('Finalizada')
+                    ->formatStateUsing(
+                        fn ($state): string => $state
+                            ? Carbon::parse($state)->format('d/m/Y H:i')
+                            : 'En progreso'
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Creada')
+                    ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Actualizada')
+                    ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -248,9 +283,7 @@ class ServiceOrderResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\BulkActionGroup::make([]),
             ]);
     }
 
