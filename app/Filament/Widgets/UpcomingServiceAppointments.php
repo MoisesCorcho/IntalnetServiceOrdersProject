@@ -47,8 +47,10 @@ class UpcomingServiceAppointments extends BaseWidget
                 ->dateTime('d/m/Y H:i'),
             Tables\Columns\TextColumn::make('assignedUser.full_name')
                 ->label('Técnico')
+                ->searchable(['name', 'last_name'])
                 ->placeholder('Sin asignar'),
             Tables\Columns\TextColumn::make('customer_name_snapshot')
+                ->searchable(['first_name', 'last_name'])
                 ->label('Cliente'),
             Tables\Columns\TextColumn::make('state')
                 ->label('Estado')

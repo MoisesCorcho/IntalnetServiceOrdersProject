@@ -5,7 +5,7 @@ namespace App\Filament\Widgets;
 use App\Enums\EnumServiceOrderStatus;
 use App\Models\ServiceOrder;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Card;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
 
 class ServiceOrderAlerts extends BaseWidget
@@ -31,17 +31,17 @@ class ServiceOrderAlerts extends BaseWidget
             ->count();
 
         return [
-            Card::make('Órdenes sin técnico', number_format($withoutTechnician))
+            Stat::make('Órdenes sin técnico', number_format($withoutTechnician))
                 ->description('Asignar responsable')
                 ->descriptionIcon('heroicon-o-user-minus')
                 ->color('warning'),
 
-            Card::make('Órdenes vencidas', number_format($overdue))
+            Stat::make('Órdenes vencidas', number_format($overdue))
                 ->description('Programación ya pasó')
                 ->descriptionIcon('heroicon-o-exclamation-triangle')
                 ->color('danger'),
 
-            Card::make('Órdenes sin programación', number_format($withoutSchedule))
+            Stat::make('Órdenes sin programación', number_format($withoutSchedule))
                 ->description('Revisar agenda')
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('gray'),

@@ -52,6 +52,7 @@ class AdminPanelProvider extends PanelProvider
                 UpcomingServiceAppointments::class,
                 TopCustomersTable::class,
                 ServiceOrderForecastChart::class,
+                TechnicianPerformanceTable::class,
             ])
             ->middleware([
                 EncryptCookies::class,
