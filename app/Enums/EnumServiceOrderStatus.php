@@ -23,5 +23,22 @@ enum EnumServiceOrderStatus: string
             self::cases()
         );
     }
+
+    /**
+     * Return the enum values mapped to their Spanish labels.
+     *
+     * @return array<string, string>
+     */
+    public static function labels(): array
+    {
+        return [
+            self::RECEIVED->value => 'Recibido',
+            self::ON_THE_WAY->value => 'En camino',
+            self::AT_DESTINATION->value => 'En destino',
+            self::PROCESS_STARTED->value => 'Proceso iniciado',
+            self::COMPLETED->value => 'Completado',
+            self::CLOSED->value => 'Cerrado',
+        ];
+    }
 }
 

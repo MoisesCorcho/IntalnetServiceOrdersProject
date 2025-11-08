@@ -72,6 +72,11 @@ class UserResource extends Resource
                         ->label('Teléfono secundario')
                         ->tel()
                         ->maxLength(25),
+                    TextInput::make('email')
+                        ->label('Correo electrónico')
+                        ->email()
+                        ->required()
+                        ->maxLength(255),
                 ]),
             ])
             ->columns(1);
@@ -81,11 +86,6 @@ class UserResource extends Resource
     {
         return Section::make('Ajustes')
             ->schema([
-                TextInput::make('email')
-                    ->label('Correo electrónico')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
                 TextInput::make('password')
                     ->label('Contraseña')
                     ->password()
