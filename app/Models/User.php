@@ -87,7 +87,7 @@ class User extends Authenticatable
 
     public function serviceOrders(): HasMany
     {
-        return $this->hasMany(ServiceOrder::class);
+        return $this->hasMany(ServiceOrder::class, 'assigned_user_id');
     }
 
     #[Scope]
