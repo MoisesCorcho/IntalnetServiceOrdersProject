@@ -19,16 +19,22 @@ class ServiceOrderService
             ->withQueryString();
     }
 
-    public function findForTechnician(User $technician, int $serviceOrderId): ServiceOrder
+    public function findForTechnician(User $technician, int $serviceOrderId): ?ServiceOrder
     {
         return ServiceOrder::query()
             ->where('assigned_user_id', $technician->getKey())
-            ->findOrFail($serviceOrderId);
+            ->find($serviceOrderId);
     }
 
     public function advanceState(User $technician, int $serviceOrderId): ServiceOrder
     {
         $serviceOrder = $this->findForTechnician($technician, $serviceOrderId);
+
+        if (! $serviceOrder) {
+            throw ValidationException::withMessages([
+                'service_order_id' => 'La orden de servicio no existe o no pertenece al técnico autenticado.',
+            ]);
+        }
 
         $status = EnumServiceOrderStatus::tryFrom($serviceOrder->state);
 

@@ -5,11 +5,16 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ServiceOrderResource;
 use App\Services\ServiceOrderService;
+use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class ServiceOrderController extends Controller
 {
+    use ApiResponder;
+
     public function __construct(
         private readonly ServiceOrderService $service,
     ) {
@@ -28,12 +33,16 @@ class ServiceOrderController extends Controller
         return ServiceOrderResource::collection($orders);
     }
 
-    public function show(Request $request, int $serviceOrderId): ServiceOrderResource
+    public function show(Request $request, int $serviceOrderId): ServiceOrderResource|JsonResponse
     {
         /** @var \App\Models\User $technician */
         $technician = $request->user();
 
         $order = $this->service->findForTechnician($technician, $serviceOrderId);
+
+        if (! $order) {
+            return $this->errorResponse('La orden de servicio no existe o no pertenece al técnico autenticado.', Response::HTTP_NOT_FOUND);
+        }
 
         return ServiceOrderResource::make($order);
     }
