@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use App\Observers\ServiceOrderObserver;
+#[ObservedBy([ServiceOrderObserver::class])]
 class ServiceOrder extends Model
 {
     /** @use HasFactory<\Database\Factories\ServiceOrderFactory> */
