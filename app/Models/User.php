@@ -73,10 +73,12 @@ class User extends Authenticatable
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn (): string => trim(collect([
-                $this->name,
-                $this->last_name,
-            ])->filter()->implode(' '))
+            get: fn (): ?string => match (true) {
+                filled($this->name) && filled($this->last_name) => trim("{$this->name} {$this->last_name}"),
+                filled($this->name) => $this->name,
+                filled($this->last_name) => $this->last_name,
+                default => null,
+            }
         );
     }
 
