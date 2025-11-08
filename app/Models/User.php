@@ -22,7 +22,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'first_name',
+        'name',
         'last_name',
         'email',
         'password',
@@ -60,7 +60,7 @@ class User extends Authenticatable
      */
     public function initials(): string
     {
-        return collect([$this->first_name, $this->last_name])
+        return collect([$this->name, $this->last_name])
             ->filter()
             ->map(fn ($value) => Str::substr($value, 0, 1))
             ->take(2)
