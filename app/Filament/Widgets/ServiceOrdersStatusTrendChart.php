@@ -152,12 +152,12 @@ class ServiceOrdersStatusTrendChart extends ChartWidget
     private function resolveColorForState(EnumServiceOrderStatus $state): string
     {
         return match ($state) {
-            EnumServiceOrderStatus::RECEIVED => Color::Gray[600],
-            EnumServiceOrderStatus::ON_THE_WAY => Color::Amber[500],
-            EnumServiceOrderStatus::AT_DESTINATION => Color::Blue[500],
-            EnumServiceOrderStatus::PROCESS_STARTED => Color::Orange[500],
-            EnumServiceOrderStatus::COMPLETED => Color::Green[500],
-            EnumServiceOrderStatus::CLOSED => Color::Emerald[600],
+            EnumServiceOrderStatus::RECEIVED => '#6B7280', // Gray 600
+            EnumServiceOrderStatus::ON_THE_WAY => '#F59E0B', // Amber 500
+            EnumServiceOrderStatus::AT_DESTINATION => '#3B82F6', // Blue 500
+            EnumServiceOrderStatus::PROCESS_STARTED => '#F97316', // Orange 500
+            EnumServiceOrderStatus::COMPLETED => '#22C55E', // Green 500
+            EnumServiceOrderStatus::CLOSED => '#059669', // Emerald 600
         };
     }
 }

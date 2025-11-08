@@ -105,24 +105,24 @@ class ServiceOrderForecastChart extends ChartWidget
                 [
                     'label' => 'Órdenes recibidas',
                     'data' => $receivedDataset,
-                    'borderColor' => Color::Blue[500],
-                    'backgroundColor' => Color::Blue[200],
+                    'borderColor' => '#3B82F6', // Blue 500
+                    'backgroundColor' => '#BFDBFE', // Blue 200
                     'fill' => false,
                     'tension' => 0.3,
                 ],
                 [
                     'label' => 'Órdenes cerradas',
                     'data' => $closedDataset,
-                    'borderColor' => Color::Green[500],
-                    'backgroundColor' => Color::Green[200],
+                    'borderColor' => '#22C55E', // Green 500
+                    'backgroundColor' => '#BBF7D0', // Green 200
                     'fill' => false,
                     'tension' => 0.3,
                 ],
                 [
                     'label' => 'Backlog proyectado',
                     'data' => $backlogDataset,
-                    'borderColor' => Color::Amber[500],
-                    'backgroundColor' => Color::Amber[200],
+                    'borderColor' => '#F59E0B', // Amber 500
+                    'backgroundColor' => '#FDE68A', // Amber 200
                     'fill' => false,
                     'borderDash' => [6, 6],
                     'tension' => 0.3,

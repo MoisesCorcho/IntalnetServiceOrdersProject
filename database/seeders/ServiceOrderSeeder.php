@@ -22,6 +22,7 @@ class ServiceOrderSeeder extends Seeder
         if ($technicians->isEmpty()) {
             $this->createUnassignedOrders();
             $this->createFutureAssignedAppointments();
+            $this->createHistoricalCompletedOrders();
             return;
         }
 
@@ -66,6 +67,7 @@ class ServiceOrderSeeder extends Seeder
 
         $this->createUnassignedOrders();
         $this->createFutureAssignedAppointments($technicians);
+        $this->createHistoricalCompletedOrders($technicians);
     }
 
     private function createUnassignedOrders(): void
@@ -116,6 +118,40 @@ class ServiceOrderSeeder extends Seeder
                     ]),
                     'completed_at' => null,
                     'check_in_date' => $futureDate->toDateString(),
+                ];
+            })
+            ->create();
+    }
+
+    private function createHistoricalCompletedOrders(?iterable $technicians = null): void
+    {
+        $technicians = $technicians ?? User::query()->role('tecnico')->get();
+
+        if (empty($technicians)) {
+            return;
+        }
+
+        $techList = $technicians instanceof \Illuminate\Support\Collection ? $technicians->all() : $technicians;
+
+        ServiceOrder::factory()
+            ->count(300)
+            ->state(function () use ($techList) {
+                /** @var \App\Models\User $technician */
+                $technician = $techList[array_rand($techList)];
+                $daysAgo = fake()->numberBetween(10, 365);
+                $checkInDateTime = now()->subDays($daysAgo)->setTime(fake()->numberBetween(8, 15), fake()->randomElement([0, 30]), 0);
+                $scheduledAt = $checkInDateTime->copy()->addMinutes(fake()->numberBetween(15, 60));
+                $completedAt = $scheduledAt->copy()->addMinutes(fake()->numberBetween(60, 120));
+
+                return [
+                    'assigned_user_id' => $technician->id,
+                    'customer_id' => \App\Models\Customer::factory(),
+                    'state' => EnumServiceOrderStatus::CLOSED->value,
+                    'check_in_date' => $checkInDateTime->toDateString(),
+                    'scheduled_at' => $scheduledAt,
+                    'completed_at' => $completedAt,
+                    'created_at' => $checkInDateTime,
+                    'updated_at' => $completedAt,
                 ];
             })
             ->create();
