@@ -14,6 +14,8 @@ use App\Traits\HasAddressTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable
 {
@@ -86,5 +88,11 @@ class User extends Authenticatable
     public function serviceOrders(): HasMany
     {
         return $this->hasMany(ServiceOrder::class);
+    }
+
+    #[Scope]
+    public function technicians(Builder $query): Builder
+    {
+        return $query->role('tecnico');
     }
 }
