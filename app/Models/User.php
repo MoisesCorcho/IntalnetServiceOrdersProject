@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -65,5 +66,15 @@ class User extends Authenticatable
             ->map(fn ($value) => Str::substr($value, 0, 1))
             ->take(2)
             ->implode('');
+    }
+
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): string => trim(collect([
+                $this->name,
+                $this->last_name,
+            ])->filter()->implode(' '))
+        );
     }
 }

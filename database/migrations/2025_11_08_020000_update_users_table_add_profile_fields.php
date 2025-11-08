@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('last_name')->after('name')->comment('Family name of the user');
-            $table->string('phone')->nullable()->after('email')->comment('Primary phone number of the user');
+            $table->string('phone')->after('email')->comment('Primary phone number of the user');
             $table->string('secondary_phone')->nullable()->after('phone')->comment('Secondary phone number of the user');
         });
     }
