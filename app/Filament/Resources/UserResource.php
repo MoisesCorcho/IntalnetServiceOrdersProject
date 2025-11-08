@@ -4,24 +4,24 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\{
+    Grid,
+    Repeater,
+    Section,
+    TextInput
+};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\ForceDeleteAction;
-use Filament\Tables\Actions\RestoreAction;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\ForceDeleteBulkAction;
-use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Actions\{
+    DeleteAction,
+    ForceDeleteAction,
+    RestoreAction,
+    BulkActionGroup
+};
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\{Builder, SoftDeletingScope};
 use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
@@ -167,17 +167,13 @@ class UserResource extends Resource
                         ->color('danger')
                         ->requiresConfirmation(),
                     RestoreAction::make()
-                        ->visible(fn (User $record): bool => $record->trashed()),
+                        ->visible(fn(User $record): bool => $record->trashed()),
                     ForceDeleteAction::make()
-                        ->visible(fn (User $record): bool => $record->trashed()),
+                        ->visible(fn(User $record): bool => $record->trashed()),
                 ])
             ])
             ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                ]),
+                BulkActionGroup::make([]),
             ]);
     }
 

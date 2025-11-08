@@ -5,13 +5,25 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
-use Filament\Forms;
+use Filament\Forms\Components\{
+    Grid,
+    Repeater,
+    Section,
+    TextInput
+};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\{
+    DeleteAction,
+    ForceDeleteAction,
+    RestoreAction
+};
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\{
+    Builder,
+    SoftDeletingScope
+};
 
 class CustomerResource extends Resource
 {
@@ -21,19 +33,92 @@ class CustomerResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
+        return $form->schema([
+            Grid::make([
+                'sm' => 1,
+                'lg' => 2,
+            ])->schema([
+                static::personalInformationSection(),
+                static::contactSection(),
+            ]),
+            static::addressesSection(),
+        ]);
+    }
+
+    protected static function personalInformationSection(): Section
+    {
+        return Section::make('Información personal')
             ->schema([
-                Forms\Components\TextInput::make('first_name')
-                    ->required(),
-                Forms\Components\TextInput::make('last_name')
-                    ->required(),
-                Forms\Components\TextInput::make('email')
-                    ->email(),
-                Forms\Components\TextInput::make('phone')
-                    ->tel(),
-                Forms\Components\TextInput::make('secondary_phone')
-                    ->tel(),
-            ]);
+                Grid::make(2)->schema([
+                    TextInput::make('first_name')
+                        ->label('Nombre')
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('last_name')
+                        ->label('Apellidos')
+                        ->required()
+                        ->maxLength(255),
+                ]),
+            ])
+            ->columns(1);
+    }
+
+    protected static function contactSection(): Section
+    {
+        return Section::make('Contacto')
+            ->schema([
+                TextInput::make('email')
+                    ->label('Correo electrónico')
+                    ->email()
+                    ->maxLength(255),
+                Grid::make(2)->schema([
+                    TextInput::make('phone')
+                        ->label('Teléfono')
+                        ->tel()
+                        ->maxLength(25),
+                    TextInput::make('secondary_phone')
+                        ->label('Teléfono secundario')
+                        ->tel()
+                        ->maxLength(25),
+                ]),
+            ])
+            ->columns(1);
+    }
+
+    protected static function addressesSection(): Section
+    {
+        return Section::make('Direcciones')
+            ->schema([
+                Repeater::make('addresses')
+                    ->relationship()
+                    ->label('Direcciones registradas')
+                    ->schema([
+                        Grid::make(2)->schema([
+                            TextInput::make('street')
+                                ->label('Dirección')
+                                ->required()
+                                ->maxLength(255)
+                                ->columnSpan(2),
+                            TextInput::make('city')
+                                ->label('Ciudad')
+                                ->required()
+                                ->maxLength(255),
+                            TextInput::make('state')
+                                ->label('Departamento')
+                                ->maxLength(255),
+                            TextInput::make('zip')
+                                ->label('Código postal')
+                                ->maxLength(20),
+                        ]),
+                    ])
+                    ->collapsible()
+                    ->collapsed()
+                    ->defaultItems(0)
+                    ->itemLabel(fn (array $state): string => $state['street'] ?? 'Dirección')
+                    ->addActionLabel('Agregar dirección')
+                    ->columnSpanFull(),
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -67,15 +152,20 @@ class CustomerResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make()
+                        ->color('info'),
+                    Tables\Actions\EditAction::make()
+                        ->color('warning'),
+                    DeleteAction::make()
+                        ->color('danger')
+                        ->requiresConfirmation(),
+                    RestoreAction::make(),
+                    ForceDeleteAction::make(),
+                ])
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
-                ]),
+                Tables\Actions\BulkActionGroup::make([]),
             ]);
     }
 
