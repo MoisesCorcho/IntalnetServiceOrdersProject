@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('last_name')->after('first_name')->comment('Family name of the user');
             $table->string('phone')->nullable()->after('email')->comment('Primary phone number of the user');
             $table->string('secondary_phone')->nullable()->after('phone')->comment('Secondary phone number of the user');
-            $table->text('address')->nullable()->after('secondary_phone')->comment('Mailing or residential address of the user');
         });
     }
 

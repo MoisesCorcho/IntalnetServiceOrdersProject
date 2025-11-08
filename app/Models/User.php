@@ -9,11 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Traits\HasAddressTrait;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasApiTokens;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasApiTokens, HasAddressTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -26,8 +27,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'secondary_phone',
-        'address',
+        'secondary_phone'
     ];
 
     /**

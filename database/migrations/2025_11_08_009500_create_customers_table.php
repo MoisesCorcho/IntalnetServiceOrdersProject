@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('email')->nullable()->comment('Primary email address of the customer');
             $table->string('phone')->nullable()->comment('Primary phone number of the customer');
             $table->string('secondary_phone')->nullable()->comment('Secondary phone number for the customer');
-            $table->text('address')->nullable()->comment('Billing or primary address of the customer');
             $table->timestamps();
         });
     }

@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasAddressTrait;
 
 class Customer extends Model
 {
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
-    use HasFactory;
+    use HasFactory, HasAddressTrait;
 
     /**
      * @var list<string>
@@ -18,7 +19,6 @@ class Customer extends Model
         'last_name',
         'email',
         'phone',
-        'secondary_phone',
-        'address',
+        'secondary_phone'
     ];
 }
