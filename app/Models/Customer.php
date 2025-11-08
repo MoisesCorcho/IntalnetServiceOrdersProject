@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasAddressTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
-    use HasFactory, HasAddressTrait;
+    use HasFactory, HasAddressTrait, SoftDeletes;
 
     /**
      * @var list<string>

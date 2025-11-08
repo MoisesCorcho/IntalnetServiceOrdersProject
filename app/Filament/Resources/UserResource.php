@@ -11,7 +11,17 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\ForceDeleteAction;
+use Filament\Tables\Actions\RestoreAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\ForceDeleteBulkAction;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
@@ -106,7 +116,7 @@ class UserResource extends Resource
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('state')
-                                ->label('Estado / Provincia')
+                                ->label('Departamento')
                                 ->maxLength(255),
                             TextInput::make('zip')
                                 ->label('Código postal')
@@ -145,7 +155,7 @@ class UserResource extends Resource
                     ->toggleable(),
             ])
             ->filters([
-                //
+                TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
@@ -153,13 +163,21 @@ class UserResource extends Resource
                         ->color('info'),
                     Tables\Actions\EditAction::make()
                         ->color('warning'),
-                    Tables\Actions\DeleteAction::make()
+                    DeleteAction::make()
                         ->color('danger')
-                        ->requiresConfirmation()
+                        ->requiresConfirmation(),
+                    RestoreAction::make()
+                        ->visible(fn (User $record): bool => $record->trashed()),
+                    ForceDeleteAction::make()
+                        ->visible(fn (User $record): bool => $record->trashed()),
                 ])
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([]),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                ]),
             ]);
     }
 
@@ -178,5 +196,13 @@ class UserResource extends Resource
             'view' => Pages\ViewUser::route('/{record}'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }
