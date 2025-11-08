@@ -13,11 +13,12 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Traits\HasAddressTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasApiTokens, HasAddressTrait, SoftDeletes;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasApiTokens, HasAddressTrait, SoftDeletes, HasRoles;
 
     /**
      * The attributes that are mass assignable.

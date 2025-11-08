@@ -8,7 +8,8 @@ use Filament\Forms\Components\{
     Grid,
     Repeater,
     Section,
-    TextInput
+    TextInput,
+    CheckboxList
 };
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -93,6 +94,10 @@ class UserResource extends Resource
                     ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? Hash::make($state) : null)
                     ->dehydrated(fn(?string $state): bool => filled($state))
                     ->revealable(),
+
+                CheckboxList::make('roles')
+                    ->relationship('roles', 'name')
+                    ->searchable(),
             ])
             ->columns(1);
     }
