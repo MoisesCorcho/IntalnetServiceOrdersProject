@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\EnumServiceOrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ServiceOrderResource;
 use App\Services\ServiceOrderService;
@@ -28,7 +29,14 @@ class ServiceOrderController extends Controller
         $perPage = (int) $request->integer('per_page', 15);
         $perPage = max(1, min($perPage, 50));
 
-        $orders = $this->service->listForTechnician($technician, $perPage);
+        $status = $request->query('status');
+        $statusEnum = filled($status) ? EnumServiceOrderStatus::tryFrom((string) $status) : null;
+
+        $orders = $this->service->listForTechnician(
+            technician: $technician,
+            perPage: $perPage,
+            status: $statusEnum,
+        );
 
         return ServiceOrderResource::collection($orders);
     }
