@@ -66,7 +66,11 @@ class ServiceOrderResource extends Resource
                                 : now()),
                         Forms\Components\Select::make('assigned_user_id')
                             ->label('Técnico asignado')
-                            ->relationship('assignedUser', 'name')
+                            ->relationship(
+                                'assignedUser',
+                                'name',
+                                fn (Builder $query) => $query->technicians()
+                            )
                             ->searchable()
                             ->preload()
                             ->getOptionLabelFromRecordUsing(

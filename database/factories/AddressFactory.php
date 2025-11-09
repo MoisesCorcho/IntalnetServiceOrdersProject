@@ -17,7 +17,12 @@ class AddressFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'entity_type' => \App\Models\Customer::class,
+            'entity_id' => \App\Models\Customer::factory(),
+            'street' => fake()->streetAddress(),
+            'city' => fake()->city(),
+            'state' => fake()->state(),
+            'zip' => fake()->postcode(),
         ];
     }
 }
