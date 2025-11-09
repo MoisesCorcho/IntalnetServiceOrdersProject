@@ -4,13 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\HasAddressTrait;
+use App\Traits\HasFullName;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasApiTokens, HasAddressTrait, SoftDeletes, HasRoles;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasApiTokens, HasAddressTrait, SoftDeletes, HasRoles, HasFullName;
 
     /**
      * The attributes that are mass assignable.
@@ -73,16 +73,9 @@ class User extends Authenticatable
             ->implode('');
     }
 
-    protected function fullName(): Attribute
+    protected function fullNamePrimaryAttribute(): ?string
     {
-        return Attribute::make(
-            get: fn (): ?string => match (true) {
-                filled($this->name) && filled($this->last_name) => trim("{$this->name} {$this->last_name}"),
-                filled($this->name) => $this->name,
-                filled($this->last_name) => $this->last_name,
-                default => null,
-            }
-        );
+        return 'name';
     }
 
     public function serviceOrders(): HasMany
