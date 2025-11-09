@@ -4,12 +4,15 @@ namespace App\Filament\Widgets;
 
 use App\Enums\EnumServiceOrderStatus;
 use App\Models\ServiceOrder;
+use App\Models\User; // <-- 1. IMPORTAR USER
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\Filter; // <-- 2. IMPORTAR FILTER
+use Filament\Forms\Components\CheckboxList; // <-- 3. IMPORTAR CHECKBOXLIST
 
 class ServiceOrdersTable extends BaseWidget
 {
@@ -68,11 +71,12 @@ class ServiceOrdersTable extends BaseWidget
                     ->wrap()
                     ->searchable(),
 
+                // *** 1. AQUÍ ESTÁ LA CORRECCIÓN PRINCIPAL ***
                 TextColumn::make('assignedUser.full_name')
                     ->label('Técnico Asignado')
                     ->placeholder('Sin asignar')
                     ->searchable(['name', 'last_name'])
-                    ->sortable(),
+                    ->sortable(['name', 'last_name']), // <-- Se añadió el array
 
                 TextColumn::make('customer_name_snapshot')
                     ->label('Cliente')
@@ -125,10 +129,30 @@ class ServiceOrdersTable extends BaseWidget
                     ->label('Estado')
                     ->options($statusLabels),
 
-                SelectFilter::make('assigned_user_id')
+                // *** 4. AQUÍ ESTÁ LA MEJORA ***
+                // Reemplazamos el SelectFilter por un Filter con CheckboxList
+                Filter::make('assigned_user_id')
                     ->label('Técnico')
-                    ->relationship('assignedUser', 'full_name')
-                    ->searchable(),
+                    ->form([
+                        CheckboxList::make('technicians') // 'technicians' es un nombre interno
+                            ->label('Seleccionar técnicos')
+                            ->options(
+                                // Obtenemos los técnicos y usamos el accesor 'full_name'
+                                // CORRECCIÓN: Se usa query() para llamar al scope correctamente
+                                User::query()->technicians() 
+                                    ->get()
+                                    ->mapWithKeys(fn ($user) => [$user->id => $user->full_name])
+                            )
+                            ->searchable() // Añade un campo de búsqueda a la lista
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        // Si no hay técnicos seleccionados, no hacer nada
+                        if (blank($data['technicians'])) {
+                            return $query;
+                        }
+                        // Aplicar el filtro a la consulta
+                        return $query->whereIn('assigned_user_id', $data['technicians']);
+                    }),
 
                 TernaryFilter::make('sin_tecnico')
                     ->label('Sin técnico asignado')
@@ -144,4 +168,3 @@ class ServiceOrdersTable extends BaseWidget
         return in_array($status, EnumServiceOrderStatus::values(), true);
     }
 }
-
