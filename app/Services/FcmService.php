@@ -39,12 +39,23 @@ class FcmService
         $messaging = app(Messaging::class);
 
         foreach ($tokens as $token) {
+            $payload = [
+                'token' => $token,
+                'notification' => $notification,
+            ];
+
+            if (! empty($data)) {
+                $normalizedData = [];
+
+                foreach ($data as $key => $value) {
+                    $normalizedData[(string) $key] = (string) $value;
+                }
+
+                $payload['data'] = $normalizedData;
+            }
+
             try {
-                $messaging->send([
-                    'token' => $token,
-                    'notification' => $notification,
-                    'data' => $data,
-                ]);
+                $messaging->send($payload);
             } catch (MessagingException $exception) {
                 if ($this->shouldDeleteToken($exception)) {
                     FcmToken::where('token', $token)->delete();
