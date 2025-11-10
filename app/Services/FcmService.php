@@ -12,10 +12,7 @@ use Throwable;
 
 class FcmService
 {
-    public function __construct(
-        private readonly Messaging $messaging
-    ) {
-    }
+    public function __construct() {}
 
     public function registerToken(User $user, string $token, ?string $deviceName = null): FcmToken
     {
@@ -39,9 +36,11 @@ class FcmService
             return;
         }
 
+        $messaging = app(Messaging::class);
+
         foreach ($tokens as $token) {
             try {
-                $this->messaging->send([
+                $messaging->send([
                     'token' => $token,
                     'notification' => $notification,
                     'data' => $data,
