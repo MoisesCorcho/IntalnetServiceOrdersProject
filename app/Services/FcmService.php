@@ -17,9 +17,11 @@ class FcmService
     public function registerToken(User $user, string $token, ?string $deviceName = null): FcmToken
     {
         return FcmToken::updateOrCreate(
-            ['token' => $token],
             [
                 'user_id' => $user->getKey(),
+                'token' => $token,
+            ],
+            [
                 'device_name' => $deviceName,
             ]
         );
