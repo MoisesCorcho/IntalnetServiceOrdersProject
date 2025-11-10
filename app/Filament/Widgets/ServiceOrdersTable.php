@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Enums\EnumServiceOrderStatus;
 use App\Models\ServiceOrder;
 use App\Models\User; // <-- 1. IMPORTAR USER
+use Carbon\CarbonInterval;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -111,6 +112,27 @@ class ServiceOrdersTable extends BaseWidget
                         default => 'secondary',
                     })
                     ->sortable(),
+
+                TextColumn::make('completion_duration')
+                    ->label('Tiempo de resolución')
+                    ->state(function (ServiceOrder $record): ?string {
+                        $createdAt = $record->created_at;
+                        $completedAt = $record->completed_at;
+
+                        if ($createdAt === null || $completedAt === null) {
+                            return null;
+                        }
+
+                        return CarbonInterval::instance($createdAt->diff($completedAt))
+                            ->cascade()
+                            ->forHumans([
+                                'short' => true,
+                                'parts' => 3,
+                                'join' => true,
+                            ]);
+                    })
+                    ->placeholder('En progreso')
+                    ->toggleable(),
 
                 TextColumn::make('check_in_date')
                     ->label('Fecha de recepción')

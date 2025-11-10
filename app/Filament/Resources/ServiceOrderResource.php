@@ -37,13 +37,17 @@ class ServiceOrderResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('order_number')
-                            ->label('Número de orden')
+                            ->label('REVISIÓN TECNICA N°')
+                            ->placeholder('85997')
+                            ->numeric()
                             ->required(),
                         Forms\Components\TextInput::make('title')
-                            ->label('Título')
+                            ->label('Plan')
+                            ->placeholder('Plan Ultra 100 megas.')
                             ->required(),
                         Forms\Components\Textarea::make('description')
-                            ->label('Descripción')
+                            ->label('OBSERVACIONES')
+                            ->placeholder('Sin servicio de internet, llamar antes de ir.')
                             ->columnSpanFull(),
                     ]),
                 Forms\Components\Section::make('Programación y estado')
@@ -52,13 +56,14 @@ class ServiceOrderResource extends Resource
                         Forms\Components\Select::make('state')
                             ->label('Estado')
                             ->options(EnumServiceOrderStatus::labels())
-                            ->default(EnumServiceOrderStatus::RECEIVED->value)
+                            ->default(EnumServiceOrderStatus::CREATED->value)
+                            ->disabled(fn (?ServiceOrder $record): bool => $record === null)
                             ->required()
                             ->native(false),
                         Forms\Components\DatePicker::make('check_in_date')
                             ->label('Recibido el')
                             ->required()
-                            ->minDate(now()->startOfDay()),
+                            ->default(now()->startOfDay()),
                         Forms\Components\DateTimePicker::make('scheduled_at')
                             ->label('Programado para')
                             ->minDate(fn (callable $get) => $get('check_in_date')

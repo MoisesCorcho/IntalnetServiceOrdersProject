@@ -4,6 +4,8 @@ namespace App\Enums;
 
 enum EnumServiceOrderStatus: string
 {
+    case CREATED = 'created';
+    case ASSIGNED = 'assigned';
     case RECEIVED = 'received';
     case ON_THE_WAY = 'on_the_way';
     case AT_DESTINATION = 'at_destination';
@@ -32,12 +34,14 @@ enum EnumServiceOrderStatus: string
     public static function labels(): array
     {
         return [
+            self::CREATED->value => 'Creada',
+            self::ASSIGNED->value => 'Asignada',
             self::RECEIVED->value => 'Recibido',
             self::ON_THE_WAY->value => 'En camino',
             self::AT_DESTINATION->value => 'En destino',
             self::PROCESS_STARTED->value => 'Proceso iniciado',
-            self::COMPLETED->value => 'Completado',
-            self::CLOSED->value => 'Cerrado',
+            self::COMPLETED->value => 'Completada',
+            self::CLOSED->value => 'Cerrada',
         ];
     }
 

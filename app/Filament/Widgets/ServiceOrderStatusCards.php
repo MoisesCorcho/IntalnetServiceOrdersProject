@@ -20,7 +20,12 @@ class ServiceOrderStatusCards extends BaseWidget
 
         return collect(EnumServiceOrderStatus::cases())
             ->map(function (EnumServiceOrderStatus $status) use ($definitions, $counts, $chartData): Stat {
-                $definition = $definitions[$status->value];
+                $definition = $definitions[$status->value] ?? [
+                    'title' => $status->label(),
+                    'description' => null,
+                    'description_icon' => null,
+                    'color' => null,
+                ];
                 $stat = Stat::make($definition['title'], number_format((int) $counts->get($status->value, 0)))
                     ->url(route('filament.admin.pages.dashboard', ['status' => $status->value]));
 
@@ -52,6 +57,18 @@ class ServiceOrderStatusCards extends BaseWidget
     private function definitions(): array
     {
         return [
+            EnumServiceOrderStatus::CREATED->value => [
+                'title' => 'Órdenes creadas',
+                'description' => 'Registradas recientemente',
+                'description_icon' => 'heroicon-m-document-plus',
+                'color' => 'gray',
+            ],
+            EnumServiceOrderStatus::ASSIGNED->value => [
+                'title' => 'Órdenes asignadas',
+                'description' => 'Técnico designado',
+                'description_icon' => 'heroicon-m-user-circle',
+                'color' => 'warning',
+            ],
             EnumServiceOrderStatus::RECEIVED->value => [
                 'title' => 'Órdenes recibidas',
                 'description' => 'Órdenes nuevas sin asignar',

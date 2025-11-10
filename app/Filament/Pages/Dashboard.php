@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Filament\Widgets\ServiceOrderStatusCards;
 use App\Filament\Widgets\ServiceOrdersTable;
+use App\Filament\Widgets\TechnicianPerformanceTable;
 
 class Dashboard extends \Filament\Pages\Dashboard
 {
@@ -24,6 +25,7 @@ class Dashboard extends \Filament\Pages\Dashboard
         return [
             ServiceOrderStatusCards::class,
             ServiceOrdersTable::class,
+            TechnicianPerformanceTable::class,
         ];
     }
 }

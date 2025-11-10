@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\Api\V1\ServiceOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\FcmTokenController;
+use App\Http\Controllers\Api\V1\ServiceOrderController;
 
 // Public routes
 Route::middleware('guest:sanctum')->prefix('v1')->group(function () {
@@ -28,4 +29,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
             ->whereNumber('serviceOrder')
             ->name('service-orders.advance-state');
     });
+
+    Route::post('/fcm-tokens', [FcmTokenController::class, 'store'])
+        ->name('fcm-tokens.store');
 });

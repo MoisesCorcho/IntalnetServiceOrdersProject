@@ -5,4 +5,8 @@
     <div class="mt-6">
         @livewire(\App\Filament\Widgets\ServiceOrdersTable::class, ['status' => $this->status])
     </div>
+
+    <div class="mt-6">
+        @livewire(\App\Filament\Widgets\TechnicianPerformanceTable::class)
+    </div>
 </x-filament-panels::page>

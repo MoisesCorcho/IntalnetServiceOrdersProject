@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title')->comment('Short summary describing the service order');
             $table->text('description')->nullable()->comment('Detailed description of the service request');
             $table->string('state')
-                ->default(EnumServiceOrderStatus::RECEIVED->value)
+                ->default(EnumServiceOrderStatus::CREATED->value)
                 ->comment('Current status of the service order');
             $table->date('check_in_date')->comment('Date when the service order was received');
             $table->timestamp('scheduled_at')->nullable()->comment('Planned date and time for the service visit');
